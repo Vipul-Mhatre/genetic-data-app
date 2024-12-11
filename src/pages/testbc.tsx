@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { storeGeneticData, getGeneticData } from "../utils/blockchain";
+import { storeGeneticData, getGeneticData } from "../utils/Blockchain";
+interface RetrievedData {
+  dataHash: string;
+  isAnonymized: boolean;
+}
 
 export default function TestBlockchain() {
-  const [dataHash, setDataHash] = useState("");
-  const [isAnonymized, setIsAnonymized] = useState(false);
-  const [retrievedData, setRetrievedData] = useState<any>(null);
+  const [dataHash, setDataHash] = useState<string>(""); 
+  const [isAnonymized, setIsAnonymized] = useState<boolean>(false); 
+  const [retrievedData, setRetrievedData] = useState<RetrievedData | null>(null); 
 
   const handleStoreData = async () => {
     await storeGeneticData(dataHash, isAnonymized);
@@ -12,9 +16,16 @@ export default function TestBlockchain() {
   };
 
   const handleRetrieveData = async () => {
-    const data = await getGeneticData("YOUR_WALLET_ADDRESS"); // wallet address
+    const walletAddress = process.env.WALLET_ADDRESS;
+    
+    if (!walletAddress) {
+      alert("Wallet address is not defined in environment variables.");
+      return;
+    }
+    
+    const data = await getGeneticData(walletAddress); 
     setRetrievedData(data);
-  };
+  };  
 
   return (
     <div style={{ padding: "2rem" }}>
